@@ -1,0 +1,206 @@
+import * as React from 'react';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import Menu from '@mui/material/Menu';
+import Container from '@mui/material/Container';
+import Avatar from '@mui/material/Avatar';
+import { Link } from 'react-router-dom';
+import Tooltip from '@mui/material/Tooltip';
+import LocalMoviesIcon from '@mui/icons-material/LocalMovies';
+import MenuItem from '@mui/material/MenuItem';
+// import SearchBar from './SearchBar';
+import { Button } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../redux/userSlice';
+import GoogleLogoutHook from '../components/common/GoogleLogoutHook';
+import { clearFilters } from '../redux/filterSlice';
+import { useEffect } from 'react';
+
+const Navbar = () => {
+
+    var pages = [];
+
+    // { name: 'Movies', link: '/'}, {name :'Actors', link: '/actors'},{name :'Producers', link: '/producers'}, {name : 'Dashboard', link: '/dashboard'}
+    const settings = ['Logout'];
+    const { user, type } = useSelector(state => state.user);
+  
+    const [anchorElNav, setAnchorElNav] = React.useState(null);
+    const [anchorElUser, setAnchorElUser] = React.useState(null);
+    const storeUser = useSelector(state => state.user);
+    const dispatch = useDispatch();
+  
+    // useEffect(() => {
+    //   console.log(type);
+    //   if (type === "admin"){
+    //     console.log("yy");
+    //     pages = [{ name: 'Movies', link: '/'}, {name :'Actors', link: '/actors'},{name :'Producers', link: '/producers'}, {name : 'Dashboard', link: '/dashboard'}]
+      
+    //   }else{
+    //     pages = [{ name: 'Movies', link: '/movies/admin'}, {name :'Actors', link: '/actors/admin'},{name :'Producers', link: '/producers/admin'}, {name : 'Dashboard', link: '/dashboard'}]
+    //     console.log("yiy");
+    //   }
+    //     console.log(pages);
+    //     }, [type, pages])
+
+
+    const loadNav = () => {
+      if (type === "admin"){
+        console.log("yy");
+        pages = [{ name: 'Movies', link: '/movies/admin'}, {name :'Actors', link: '/actors/admin'},{name :'Producers', link: '/producers/admin'}, {name : 'Dashboard', link: '/dashboard'}]
+      
+      }else{
+        pages = [{ name: 'Movies', link: '/'}, {name :'Actors', link: '/actors'},{name :'Producers', link: '/producers'}]
+        console.log("yiy");
+      }
+        console.log(pages);
+    }
+
+    const handleOpenNavMenu = (event) => {
+      setAnchorElNav(event.currentTarget);
+    };
+    const handleOpenUserMenu = (event) => {
+      setAnchorElUser(event.currentTarget);
+    };
+  
+    const handleCloseNavMenu = () => {
+      setAnchorElNav(null);
+    };
+  
+    const handleCloseUserMenu = () => {
+      setAnchorElUser(null);
+    };
+  
+    return (
+
+    //   {type === "admin" ? < Navigate to = "/movies/admin" />:
+    // }
+    <div>{loadNav()}
+
+<AppBar position="fixed" sx={{
+        backgroundColor:"#301934"
+      }} >
+        <Container maxWidth="xl">
+          <Toolbar disableGutters>
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
+            >
+              Cinemaverse
+            </Typography>
+  
+            <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+              <IconButton
+                size="large"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleOpenNavMenu}
+                color="inherit"
+              >
+                <LocalMoviesIcon/>
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorElNav}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                open={Boolean(anchorElNav)}
+                onClose={handleCloseNavMenu}
+                sx={{
+                  display: { xs: 'block', md: 'none' },
+                }}
+              >
+                {pages.map((page) => {  
+                  return(
+                  <MenuItem key={page.name} onClick={handleCloseNavMenu}>
+                    <><Link to={page.link} style={{ textDecoration:'none', color:'Black'}} onClick={dispatch(clearFilters())}>{page.name}</Link></>
+                 </MenuItem>
+                 )}  
+                )}
+              </Menu>
+              {/* <SearchBar/> */}
+            </Box>
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
+              >
+              Cinemaverse
+            </Typography>
+            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                {/* <SearchBar/> */}
+                {pages.map((page) => {
+                    console.log(page);
+                    return( 
+                      <MenuItem key={page.name}>
+                        <Link to={page.link} style={{ textDecoration:'none', color:'white'}}onClick={dispatch(clearFilters())}>{page.name}</Link>
+                    </MenuItem>
+                    )
+                }
+                   
+                )}
+                {
+                  // storeUser.user &&
+                  // (storeUser.user.role === 'Admin') ?
+                  //     <MenuItem key="Admin">
+                  //       <Link to={'/admin'} style={{ textDecoration:'none', color:'white'}}>Admin</Link>
+                  //     </MenuItem> :
+                  //     <></>
+                }
+            </Box>
+  
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt="Guest" src={storeUser.user !== null ? storeUser.user.avatar[0].url : '/assests/temp_avatar.png' } />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {settings.map((setting) => (
+                  <MenuItem key={setting} onClick={handleCloseNavMenu}>
+                    { !storeUser.onGoogle ? 
+                      <GoogleLogoutHook /> : 
+                      <Button onClick={() => { dispatch(logout()) }}><Typography textAlign="center">{setting}</Typography></Button>
+                    }
+                    
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+          </Toolbar>
+        </Container>
+      </AppBar>
+    </div>
+     
+    );
+  };
+ 
+export default Navbar;
